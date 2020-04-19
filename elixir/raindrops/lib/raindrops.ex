@@ -8,44 +8,23 @@ defmodule Raindrops do
   - If the number does not contain 3, 5, or 7 as a prime factor,
     just pass the number's digits straight through.
   """
+
+  @rain_sound %{ 3 => "Pling", 5 => "Plang", 7 => "Plong" }
+
   @spec convert(pos_integer) :: String.t()
   def convert(number) do
-    number
-    |> get_prime_factors(number, [])
-    |> make_rain_sound()
-    |> check_completion(number)
+    sounds = @rain_sound |> Map.keys()
+      |> Enum.filter(& rem(number, &1) == 0)
+      |> Enum.map_join(& @rain_sound[&1])
+
+      check_no_sounds(sounds) || Integer.to_string(number)
   end
 
-  def get_prime_factors(number, n, acc) when n == 1 do
-    [1 | acc]
+  def check_no_sounds("") do
+    nil
   end
 
-  def get_prime_factors(number, n, acc) do
-    if rem(number, n) == 0 do
-      get_prime_factors(number, n-1, [n | acc])
-    else
-      get_prime_factors(number, n-1, acc)
-    end
+  def check_no_sounds(str) do
+    str
   end
-
-  def make_rain_sound(prime_factors) do
-    prime_factors
-    |> Enum.reduce("", fn n, acc ->
-      case n do
-        3 -> acc <> "Pling"
-        5 -> acc <> "Plang"
-        7 -> acc <> "Plong"
-        _ -> acc
-      end
-    end)
-  end
-
-  def check_completion(rain_sound, number) do
-    if rain_sound == "" do
-      "#{number}"
-    else
-      rain_sound
-    end
-  end
-
 end
